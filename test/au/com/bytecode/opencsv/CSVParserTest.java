@@ -565,6 +565,16 @@ public class CSVParserTest {
         assertEquals("29", nextItem[2]);
         assertEquals("C:\\foo.txt", nextItem[3]);
     }
+
+    @Test
+    public void testNoEscapeNulProcessing() throws IOException {
+        CSVParser testParser = new CSVParser(',','"', '\0');
+        String[] nextItem = testParser.parseLine("\0,\0\0");
+        assertEquals(2, nextItem.length);
+        assertEquals(0, nextItem[0].charAt(0));
+        assertEquals("\0", nextItem[0]);
+        assertEquals("\0\0", nextItem[1]);
+    }
     
     
     /*

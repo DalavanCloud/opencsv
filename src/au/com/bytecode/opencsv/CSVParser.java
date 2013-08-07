@@ -321,7 +321,7 @@ public class CSVParser {
         
         for (int i = 0; i < lineLength; i++) {
             char c = nextLine.charAt(i);
-            if (c == this.escape) {
+            if (this.escape != NULL_CHARACTER && c == this.escape) {
                 if (inField && isNextCharacterEscapable(nextLine, i)) {
                     sb.append(nextLine.charAt(i + 1));
                     i++;
@@ -411,7 +411,7 @@ public class CSVParser {
      * @return true if the following character is a quote
      */
     protected boolean isNextCharacterEscapable(String nextLine, int i) {
-        return nextLine.length() > (i + 1)  // there is indeed another character to check.
+        return this.escape != NULL_CHARACTER && nextLine.length() > (i + 1)  // there is indeed another character to check.
                 && (nextLine.charAt(i + 1) == quotechar || nextLine.charAt(i + 1) == this.escape);
     }
 
