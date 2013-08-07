@@ -460,7 +460,75 @@ public class CSVParserTest {
         assertNotNull(ESCAPE_TEST_STRING);
         assertEquals(9, ESCAPE_TEST_STRING.length());
     }
+    
+    @Test
+    public void testMultiCharSeparator() throws IOException {
+        CSVParser testParser = new CSVParser("â‚¬|â‚¬");
+        String[] nextItem = testParser.parseLine("trustâ‚¬|â‚¬meâ‚¬|â‚¬I'mâ‚¬|â‚¬theâ‚¬|â‚¬Doctor");
+        assertEquals(5, nextItem.length);
+        assertEquals("trust", nextItem[0]);
+        assertEquals("me", nextItem[1]);
+        assertEquals("I'm", nextItem[2]);
+        assertEquals("the", nextItem[3]);
+        assertEquals("Doctor", nextItem[4]);
+    }
+    
+    @Test
+    public void testMultiCharSeparatorEmtpyValue() throws IOException {
+        CSVParser testParser = new CSVParser("â‚¬|â‚¬");
+        String[] nextItem = testParser.parseLine("helloâ‚¬|â‚¬â‚¬|â‚¬goodbye");
+        assertEquals(3, nextItem.length);
+        assertEquals("hello", nextItem[0]);
+        assertEquals("", nextItem[1]);
+        assertEquals("goodbye", nextItem[2]);
+    }
+    
+    @Test
+    public void testMultiCharSeparatorLeadingSeparator() throws IOException {
+        CSVParser testParser = new CSVParser("â‚¬|â‚¬");
+        String[] nextItem = testParser.parseLine("â‚¬|â‚¬value");
+        assertEquals(2, nextItem.length);
+        assertEquals("", nextItem[0]);
+        assertEquals("value", nextItem[1]);
+    }
+    
+    @Test
+    public void testMultiCharSeparatorTrailingSeparator() throws IOException {
+        CSVParser testParser = new CSVParser("â‚¬|â‚¬");
+        String[] nextItem = testParser.parseLine("valueâ‚¬|â‚¬");
+        assertEquals(2, nextItem.length);
+        assertEquals("value", nextItem[0]);
+        assertEquals("", nextItem[1]);
+    }
+    
+    @Test
+    public void testMultiCharSeparatorInValue() throws IOException {
+        CSVParser testParser = new CSVParser("â‚¬|â‚¬");
+        String[] nextItem = testParser.parseLine("\"valâ‚¬|â‚¬ue1\"â‚¬|â‚¬value2");
+        assertEquals(2, nextItem.length);
+        assertEquals("valâ‚¬|â‚¬ue1", nextItem[0]);
+        assertEquals("value2", nextItem[1]);
+    }
+    
+    @Test
+    public void testMultiCharSeparatorMultipleQuotes() throws IOException {
+        CSVParser testParser = new CSVParser("â‚¬|â‚¬");
+        String[] nextLine = testParser.parseLine("\"\"\"\"\"\"â‚¬|â‚¬\"test\"");
+        assertEquals(2, nextLine.length);
+        assertEquals("\"\"", nextLine[0]);
+        assertEquals("test", nextLine[1]);
+    }
+    
+    @Test
+    public void testLeadingQuoteAfterMultiCharSeparator() throws IOException {
+        CSVParser testParser = new CSVParser("â‚¬|â‚¬");
+        String[] nextLine = testParser.parseLine("helloâ‚¬|â‚¬\"\"\"hello\"\"\"");
+        assertEquals(2, nextLine.length);
+        assertEquals("hello", nextLine[0]);
+        assertEquals("\"hello\"", nextLine[1]);
+    }
 
+    
     @Test
     public void whichCharactersAreEscapable() {
         // Second character is escapable because it is a slash.
@@ -551,16 +619,19 @@ public class CSVParserTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void quoteAndEscapeCannotBeTheSame() {
-        CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_QUOTE_CHARACTER);
+        @SuppressWarnings("unused")
+		CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_QUOTE_CHARACTER);
     }
 
     @Test
     public void quoteAndEscapeCanBeTheSameIfNull() {
+        @SuppressWarnings("unused")
         CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.NULL_CHARACTER, CSVParser.NULL_CHARACTER);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void separatorCharacterCannotBeNull() {
+        @SuppressWarnings("unused")
         CSVParser p = new CSVParser(CSVParser.NULL_CHARACTER);
     }
     
@@ -571,11 +642,13 @@ public class CSVParserTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void separatorAndEscapeCannotBeTheSame() {
+        @SuppressWarnings("unused")
         CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_SEPARATOR);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void separatorAndQuoteCannotBeTheSame() {
+        @SuppressWarnings("unused")
         CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_ESCAPE_CHARACTER);
     }
 
